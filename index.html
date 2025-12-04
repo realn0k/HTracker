@@ -16,7 +16,7 @@
             --success-color: #30D158; /* iOS Green */
             --danger-color: #FF453A;
             --border-radius: 16px;
-            --transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            --transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         body {
@@ -26,16 +26,15 @@
             background-color: var(--bg-color);
             color: var(--text-primary);
             height: 100vh;
-            overflow: hidden; /* Чтобы не скроллилось во время переходов */
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* Контейнер приложения */
         #app {
             width: 100%;
-            max-width: 450px; /* Эмуляция мобильного экрана */
+            max-width: 450px;
             height: 100%;
             position: relative;
             background-color: var(--bg-color);
@@ -53,12 +52,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.6s ease;
+            transition: opacity 0.5s ease;
             padding: 20px;
             box-sizing: border-box;
+            background: var(--bg-color);
+            z-index: 1;
         }
 
         .screen.active {
@@ -67,288 +67,231 @@
             z-index: 10;
         }
 
-        /* 1. Загрузчик */
-        #loader-screen {
-            background-color: var(--bg-color);
-        }
-        
-        .loader-dots {
+        /* Скролл для экранов с контентом */
+        .screen-content {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
             display: flex;
-            gap: 8px;
+            flex-direction: column;
+            align-items: center;
+            scrollbar-width: none;
         }
+        .screen-content::-webkit-scrollbar { display: none; }
 
+        /* 1. Загрузчик */
+        #loader-screen { justify-content: center; }
+        .loader-dots { display: flex; gap: 8px; }
         .dot {
-            width: 12px;
-            height: 12px;
+            width: 12px; height: 12px;
             background-color: var(--text-primary);
             border-radius: 50%;
             animation: bounce 1.4s infinite ease-in-out both;
         }
-
         .dot:nth-child(1) { animation-delay: -0.32s; }
         .dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
+        /* 2. Логотип и Приветствие */
+        #welcome-screen { justify-content: center; }
+        
+        /* Логотип HT */
+        .logo-ht {
+            width: 100px;
+            height: 100px;
+            border: 3px solid var(--text-primary);
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 24px;
+            position: relative;
+            background: linear-gradient(135deg, #1c1c1e 0%, #000 100%);
+            box-shadow: 0 10px 30px rgba(10, 132, 255, 0.15);
+        }
+        
+        .logo-ht span {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            background: -webkit-linear-gradient(45deg, #fff, #8E8E93);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        /* 2. Приветствие */
-        h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            letter-spacing: -0.5px;
+        /* Декоративные линии */
+        .logo-line {
+            position: absolute;
+            background: var(--accent-color);
+            border-radius: 2px;
+            opacity: 0.7;
         }
+        .line-1 { width: 40px; height: 3px; top: 20px; right: -10px; }
+        .line-2 { width: 3px; height: 40px; bottom: -10px; left: 20px; }
 
-        .subtitle {
-            font-size: 17px;
-            color: var(--text-secondary);
-            text-align: center;
-            margin-bottom: 40px;
-            line-height: 1.5;
-            max-width: 80%;
-        }
+        h1 { font-size: 32px; font-weight: 700; margin-bottom: 10px; }
+        .subtitle { font-size: 17px; color: var(--text-secondary); text-align: center; margin-bottom: 40px; line-height: 1.5; }
 
         .btn {
             background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 16px 32px;
-            font-size: 17px;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
-            width: 100%;
-            max-width: 300px;
+            color: white; border: none; padding: 16px 32px;
+            font-size: 17px; font-weight: 600; border-radius: 14px;
+            cursor: pointer; width: 100%; max-width: 300px;
+            transition: transform 0.2s;
         }
+        .btn:active { transform: scale(0.96); }
+        .btn-danger { background-color: var(--danger-color); margin-top: 15px; }
 
-        .btn:active {
-            transform: scale(0.96);
-            opacity: 0.8;
-        }
-
-        /* 3. Выбор режима */
-        .cards-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 100%;
-        }
-
+        /* 3. Карточки выбора */
+        #selection-screen { justify-content: center; }
         .card {
             background-color: var(--card-bg);
-            padding: 24px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: var(--transition);
-            border: 1px solid transparent;
+            padding: 24px; border-radius: var(--border-radius);
+            cursor: pointer; margin-bottom: 16px; width: 100%; box-sizing: border-box;
+            transition: background 0.3s;
         }
+        .card:hover { background-color: var(--secondary-bg); }
+        .card h3 { margin: 0 0 5px 0; }
+        .card p { margin: 0; color: var(--text-secondary); font-size: 14px; }
 
-        .card:hover {
-            background-color: var(--secondary-bg);
-        }
-
-        .card:active {
-            transform: scale(0.98);
-        }
-
-        .card h3 {
-            margin: 0 0 8px 0;
-            font-size: 20px;
-        }
-
-        .card p {
-            margin: 0;
-            color: var(--text-secondary);
-            font-size: 15px;
-        }
-
-        /* 4. Создание привычки */
-        .input-group {
-            width: 100%;
-            margin-bottom: 20px;
+        /* 4. Создание / Редактирование */
+        .input-group { width: 100%; margin-bottom: 20px; }
+        input[type="text"] {
+            width: 100%; padding: 16px; background: var(--card-bg);
+            border: none; border-radius: 12px; color: white;
+            font-size: 17px; box-sizing: border-box; outline: none;
         }
         
-        input[type="text"], input[type="time"] {
-            width: 100%;
-            padding: 16px;
-            background: var(--card-bg);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 17px;
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        input:focus {
-            box-shadow: 0 0 0 2px var(--accent-color);
-        }
-
-        .icon-selector {
-            display: flex;
-            gap: 15px;
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
             margin-bottom: 20px;
-            justify-content: center;
+            max-height: 200px;
+            overflow-y: auto;
         }
-
         .icon-option {
-            font-size: 24px;
-            padding: 10px;
-            background: var(--card-bg);
-            border-radius: 50%;
-            cursor: pointer;
+            font-size: 24px; padding: 10px; background: var(--card-bg);
+            border-radius: 12px; cursor: pointer; text-align: center;
             border: 2px solid transparent;
         }
+        .icon-option.selected { border-color: var(--accent-color); background: var(--secondary-bg); }
 
-        .icon-option.selected {
-            border-color: var(--accent-color);
-            background: var(--secondary-bg);
+        /* Toggle Switch для времени */
+        .toggle-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); padding: 12px 16px; border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        .toggle-switch {
+            position: relative; width: 50px; height: 30px;
+            background: #39393D; border-radius: 15px; cursor: pointer;
+            transition: 0.3s;
+        }
+        .toggle-switch.active { background: var(--success-color); }
+        .toggle-knob {
+            position: absolute; top: 2px; left: 2px;
+            width: 26px; height: 26px; background: white;
+            border-radius: 50%; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .toggle-switch.active .toggle-knob { transform: translateX(20px); }
+
+        input[type="time"] {
+            width: 100%; padding: 16px; background: var(--card-bg);
+            border: none; border-radius: 12px; color: white;
+            font-size: 17px; margin-top: 10px; display: none;
         }
 
-        /* 5. Дэшборд (Календарь и Список) */
-        #dashboard-screen {
-            justify-content: flex-start;
-            padding-top: 40px;
+        /* 5. Дэшборд */
+        #dashboard-screen { padding-top: 50px; align-items: flex-start; }
+        
+        /* Месяц Навигатор */
+        .month-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%; margin-bottom: 15px; padding: 0 5px; box-sizing: border-box;
         }
+        .month-nav button {
+            background: none; border: none; color: var(--accent-color);
+            font-size: 24px; cursor: pointer; padding: 5px 15px;
+        }
+        .month-title { font-size: 20px; font-weight: 700; text-transform: capitalize; }
 
-        /* Календарь */
         .calendar-strip {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            width: 100%;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            /* Скрываем скроллбар */
-            scrollbar-width: none; 
+            display: flex; gap: 8px; overflow-x: auto; width: 100%;
+            padding-bottom: 15px; scrollbar-width: none;
         }
-        .calendar-strip::-webkit-scrollbar { display: none; }
-
         .day-card {
-            min-width: 60px;
-            height: 80px;
-            background: var(--card-bg);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
+            min-width: 55px; height: 75px; background: var(--card-bg);
+            border-radius: 14px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; cursor: pointer;
+            transition: 0.3s; flex-shrink: 0;
         }
+        .day-card.active { background: var(--text-primary); color: black; }
+        .day-card.today { border: 1px solid var(--accent-color); }
 
-        .day-card.active {
-            background: var(--accent-color);
-        }
-
-        .day-card span:first-child { font-size: 14px; opacity: 0.7; }
-        .day-card span:last-child { font-size: 20px; font-weight: bold; }
-
-        /* Прогресс бар */
+        /* Прогресс */
         .progress-container {
-            width: 100%;
-            background: var(--card-bg);
-            height: 60px;
-            border-radius: var(--border-radius);
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            box-sizing: border-box;
-            position: relative;
-            overflow: hidden;
+            width: 100%; background: var(--card-bg); height: 60px;
+            border-radius: var(--border-radius); margin-bottom: 25px;
+            position: relative; overflow: hidden; display: flex; align-items: center; padding: 0 20px;
         }
-
         .progress-fill {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            background: rgba(48, 209, 88, 0.2); /* Полупрозрачный зеленый */
-            width: 0%;
-            transition: width 0.5s ease;
-            z-index: 0;
+            position: absolute; left: 0; top: 0; height: 100%;
+            background: linear-gradient(90deg, rgba(48,209,88,0.2), rgba(48,209,88,0.4));
+            width: 0%; transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-
-        .progress-text {
-            z-index: 1;
-            font-weight: 600;
-            font-size: 18px;
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-        }
+        .progress-text { z-index: 2; width: 100%; display: flex; justify-content: space-between; font-weight: 600; font-size: 18px; }
 
         /* Список задач */
-        .habit-list {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
+        .habit-list { width: 100%; display: flex; flex-direction: column; gap: 12px; padding-bottom: 80px; }
         .habit-item {
-            background: var(--card-bg);
-            padding: 16px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: var(--transition);
+            background: var(--card-bg); padding: 16px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: 0.3s; position: relative;
         }
-
-        .habit-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .habit-icon { font-size: 24px; }
         
+        /* Зона клика для текста (чтобы открыть редактор) */
+        .habit-content-click {
+            display: flex; align-items: center; gap: 14px; flex-grow: 1; cursor: pointer;
+        }
+
+        .habit-icon { font-size: 28px; }
+        .habit-details { display: flex; flex-direction: column; }
+        .habit-name { font-size: 17px; font-weight: 500; }
+        .habit-time { font-size: 13px; color: var(--accent-color); margin-top: 2px; }
+
+        /* Кастомный чекбокс */
+        .checkbox-wrapper { padding: 5px; cursor: pointer; }
         .checkbox {
-            width: 24px;
-            height: 24px;
-            border: 2px solid var(--text-secondary);
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
+            width: 28px; height: 28px;
+            border: 2px solid var(--text-secondary); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-
         .habit-item.completed .checkbox {
-            background-color: var(--success-color);
-            border-color: var(--success-color);
+            background-color: var(--success-color); border-color: var(--success-color);
+            transform: scale(1.1);
+        }
+        .habit-item.completed .checkbox::after {
+            content: '✓'; color: white; font-size: 16px; font-weight: bold;
         }
 
-        .habit-item.completed .checkbox::after {
-            content: '✓';
-            color: white;
-            font-size: 14px;
+        /* Кнопка редактирования (карандаш) */
+        .edit-btn {
+            color: var(--text-secondary); margin-left: 10px; cursor: pointer; padding: 5px;
+            font-size: 18px; opacity: 0; transition: 0.2s;
         }
-        
-        /* Кнопка добавления в дэшборде */
+        .habit-item:hover .edit-btn { opacity: 1; }
+
+        /* FAB */
         .fab {
-            position: absolute;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--accent-color);
-            color: white;
-            font-size: 30px;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: fixed; bottom: 30px; right: calc(50% - 200px + 30px);
+            width: 56px; height: 56px; border-radius: 50%;
+            background: var(--accent-color); color: white; font-size: 32px;
+            border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(10,132,255,0.4);
+            display: flex; align-items: center; justify-content: center; z-index: 100;
         }
+        @media (max-width: 450px) { .fab { right: 30px; } }
 
     </style>
 </head>
@@ -365,182 +308,314 @@
     </div>
 
     <div id="welcome-screen" class="screen">
-        
-
-[Image of minimalism abstract lines]
-
-        <h1>HTracker</h1>
-        <p class="subtitle">
-            Ваш персональный помощник для формирования полезных привычек и контроля здоровья.
-            Дисциплина — это ключ к свободе.
-        </p>
-        <button class="btn" onclick="goToSelection()">Приступить к созданию режима</button>
+        <div class="screen-content" style="justify-content: center;">
+            <div class="logo-ht">
+                <span>HT</span>
+                <div class="logo-line line-1"></div>
+                <div class="logo-line line-2"></div>
+            </div>
+            <h1>HTracker</h1>
+            <p class="subtitle">
+                Постройте режим дня.<br>
+                Следите за привычками.<br>
+                Станьте лучшей версией себя.
+            </p>
+            <button class="btn" onclick="goToSelection()">Приступить</button>
+        </div>
     </div>
 
     <div id="selection-screen" class="screen">
-        <h2>Выберите режим</h2>
-        <div class="cards-container">
+        <div class="screen-content" style="padding-top: 40px;">
+            <h2>Новая цель</h2>
             <div class="card" onclick="chooseRandom()">
-                <h3>1. Случайные привычки</h3>
-                <p>Приложение подберет для вас 3 полезные привычки на сегодня.</p>
+                <h3>🎲 Случайный выбор</h3>
+                <p>3 полезные привычки для старта</p>
             </div>
-            <div class="card" onclick="goToCreateCustom()">
-                <h3>2. Создать самому</h3>
-                <p>Введите название, выберите иконку и установите время.</p>
+            <div class="card" onclick="goToCreate(null)">
+                <h3>✨ Создать свою</h3>
+                <p>Настройте всё сами</p>
             </div>
+            <p style="margin-top:auto; color:var(--text-secondary); cursor:pointer;" onclick="switchScreen('dashboard-screen')">Вернуться к календарю</p>
         </div>
     </div>
 
     <div id="create-screen" class="screen">
-        <h2>Новая привычка</h2>
-        <div class="input-group">
-            <input type="text" id="habitName" placeholder="Название (например: Выпить воды)">
-        </div>
-        
-        <p style="color:var(--text-secondary); margin-bottom:10px;">Выберите иконку:</p>
-        <div class="icon-selector" id="iconSelector">
-            <div class="icon-option selected" onclick="selectIcon(this)">💧</div>
-            <div class="icon-option" onclick="selectIcon(this)">🏃</div>
-            <div class="icon-option" onclick="selectIcon(this)">📖</div>
-            <div class="icon-option" onclick="selectIcon(this)">🧘</div>
-            <div class="icon-option" onclick="selectIcon(this)">💊</div>
-        </div>
+        <div class="screen-content" style="padding-top: 20px;">
+            <h2 id="create-title">Новая привычка</h2>
+            
+            <div class="input-group">
+                <input type="text" id="habitName" placeholder="Название (например: Бег)">
+            </div>
+            
+            <p style="color:var(--text-secondary); align-self: flex-start; margin-bottom:10px;">Выберите иконку:</p>
+            <div class="icon-grid" id="iconGrid">
+                </div>
 
-        <div class="input-group">
-            <p style="color:var(--text-secondary); margin-bottom:10px;">Время напоминания:</p>
-            <input type="time" id="habitTime">
-        </div>
+            <div class="input-group">
+                <div class="toggle-row" onclick="toggleTimeInput()">
+                    <span>⏰ Напоминание</span>
+                    <div class="toggle-switch" id="timeSwitch"><div class="toggle-knob"></div></div>
+                </div>
+                <input type="time" id="habitTime">
+            </div>
 
-        <button class="btn" onclick="saveCustomHabit()">Добавить</button>
-        <p style="margin-top:20px; color:var(--accent-color); cursor:pointer;" onclick="goBackToSelection()">Назад</p>
+            <button class="btn" onclick="saveHabit()">Сохранить</button>
+            <button class="btn btn-danger" id="deleteBtn" style="display:none;" onclick="deleteCurrentHabit()">Удалить задачу</button>
+            
+            <p style="margin-top:20px; color:var(--text-secondary); cursor:pointer;" onclick="goBackFromCreate()">Отмена</p>
+        </div>
     </div>
 
     <div id="dashboard-screen" class="screen">
-        <div class="calendar-strip" id="calendarStrip">
-            </div>
-
-        <div class="progress-container">
-            <div class="progress-fill" id="progressFill"></div>
-            <div class="progress-text">
-                <span>Прогресс дня</span>
-                <span id="progressPercent">0%</span>
-            </div>
+        <div class="month-nav">
+            <button onclick="changeMonth(-1)">‹</button>
+            <span class="month-title" id="monthTitle">Октябрь 2023</span>
+            <button onclick="changeMonth(1)">›</button>
         </div>
 
-        <div class="habit-list" id="habitList">
+        <div class="calendar-strip" id="calendarStrip"></div>
+
+        <div class="screen-content" style="width:100%; display: block;">
+            <div class="progress-container">
+                <div class="progress-fill" id="progressFill"></div>
+                <div class="progress-text">
+                    <span>Эффективность</span>
+                    <span id="progressPercent">0%</span>
+                </div>
             </div>
 
-        <button class="fab" onclick="goToSelectionFromDash()">+</button>
+            <div class="habit-list" id="habitList"></div>
+        </div>
+
+        <button class="fab" onclick="goToSelection()">+</button>
     </div>
 
 </div>
 
 <script>
-    /* --- Логика приложения --- */
-
-    // База данных привычек (в памяти)
-    // Структура: { "2023-10-27": [ {id, name, icon, completed} ] }
+    // --- Data ---
     let habitsDB = {}; 
-    let selectedDate = null; // Текущая выбранная дата YYYY-MM-DD
+    // Формат: "YYYY-MM-DD": [ {id, name, icon, time, completed} ]
+    
+    // Календарь
+    let currentDateObj = new Date();
+    let selectedDateISO = formatDate(new Date());
+    
+    // Редактирование
+    let editingId = null; 
     let selectedIcon = "💧";
+    let isTimeEnabled = false;
 
-    // 1. Инициализация (Загрузка)
+    // Иконки
+    const ICONS = [
+        "💧", "🏃", "🧘", "📖", "💊", "🍏", "😴", "💪", 
+        "🥗", "🚭", "🚶", "🚴", "🧠", "🧹", "💰", "🎸",
+        "📵", "💻", "🐶", "🎨"
+    ];
+
+    // --- Init ---
     window.onload = () => {
-        // Устанавливаем текущую дату
-        const today = new Date();
-        selectedDate = formatDate(today);
-        
-        // Генерируем календарь
         renderCalendar();
-
-        // Таймер загрузки 5 секунд (как просили)
-        setTimeout(() => {
-            switchScreen('welcome-screen');
-        }, 5000); 
+        renderHabits();
+        renderIcons();
+        setTimeout(() => switchScreen('welcome-screen'), 5000); 
     };
 
-    // Навигация между экранами
-    function switchScreen(screenId) {
+    // --- Navigation ---
+    function switchScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
+        document.getElementById(id).classList.add('active');
     }
 
-    function goToSelection() {
-        switchScreen('selection-screen');
+    function goToSelection() { switchScreen('selection-screen'); }
+    
+    function goBackFromCreate() {
+        // Если пришли из редактора - назад в дэшборд, если создавали - в выбор
+        if (editingId) switchScreen('dashboard-screen');
+        else switchScreen('selection-screen');
     }
 
-    function goToSelectionFromDash() {
-        switchScreen('selection-screen');
-    }
+    function goToCreate(habitId) {
+        editingId = habitId;
+        const title = document.getElementById('create-title');
+        const nameInput = document.getElementById('habitName');
+        const timeInput = document.getElementById('habitTime');
+        const delBtn = document.getElementById('deleteBtn');
+        const switchEl = document.getElementById('timeSwitch');
 
-    function goBackToSelection() {
-        switchScreen('selection-screen');
-    }
+        renderIcons(); // сброс выбора
 
-    function goToCreateCustom() {
+        if (habitId) {
+            // Режим редактирования
+            title.innerText = "Редактировать";
+            const task = habitsDB[selectedDateISO].find(t => t.id === habitId);
+            nameInput.value = task.name;
+            selectIconUI(task.icon);
+            
+            if (task.time) {
+                isTimeEnabled = true;
+                switchEl.classList.add('active');
+                timeInput.style.display = 'block';
+                timeInput.value = task.time;
+            } else {
+                isTimeEnabled = false;
+                switchEl.classList.remove('active');
+                timeInput.style.display = 'none';
+                timeInput.value = '';
+            }
+            delBtn.style.display = 'block';
+        } else {
+            // Режим создания
+            title.innerText = "Новая привычка";
+            nameInput.value = '';
+            selectIconUI("💧");
+            isTimeEnabled = false;
+            switchEl.classList.remove('active');
+            timeInput.style.display = 'none';
+            timeInput.value = '';
+            delBtn.style.display = 'none';
+        }
         switchScreen('create-screen');
     }
 
-    // --- Логика Календаря ---
+    // --- Calendar Logic ---
     function formatDate(date) {
-        return date.toISOString().split('T')[0];
+        const offset = date.getTimezoneOffset() * 60000;
+        return new Date(date.getTime() - offset).toISOString().split('T')[0];
+    }
+
+    function changeMonth(delta) {
+        currentDateObj.setMonth(currentDateObj.getMonth() + delta);
+        renderCalendar();
     }
 
     function renderCalendar() {
         const strip = document.getElementById('calendarStrip');
+        const title = document.getElementById('monthTitle');
         strip.innerHTML = '';
-        const today = new Date();
-        const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+
+        const year = currentDateObj.getFullYear();
+        const month = currentDateObj.getMonth();
+        
+        // Название месяца
+        title.innerText = currentDateObj.toLocaleString('ru', { month: 'long', year: 'numeric' });
+
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
 
         for (let i = 1; i <= daysInMonth; i++) {
-            let d = new Date(today.getFullYear(), today.getMonth(), i);
-            let dateStr = formatDate(d);
-            let dayName = d.toLocaleDateString('ru-RU', { weekday: 'short' });
+            let d = new Date(year, month, i);
+            let iso = formatDate(d);
+            let dayName = d.toLocaleString('ru', { weekday: 'short' });
+            let isToday = iso === formatDate(new Date());
 
             const div = document.createElement('div');
-            div.className = `day-card ${dateStr === selectedDate ? 'active' : ''}`;
-            div.onclick = () => selectDate(dateStr, div);
-            div.innerHTML = `
-                <span>${dayName}</span>
-                <span>${i}</span>
-            `;
+            div.className = `day-card ${iso === selectedDateISO ? 'active' : ''} ${isToday ? 'today' : ''}`;
+            div.onclick = () => {
+                selectedDateISO = iso;
+                renderCalendar(); // обновляем стили
+                renderHabits();   // обновляем задачи
+            };
+            div.innerHTML = `<span>${dayName}</span><span style="font-weight:bold; font-size:18px;">${i}</span>`;
+            
             strip.appendChild(div);
         }
     }
 
-    function selectDate(dateStr, element) {
-        selectedDate = dateStr;
-        // Обновляем UI календаря
-        document.querySelectorAll('.day-card').forEach(el => el.classList.remove('active'));
-        element.classList.add('active');
-        // Обновляем список задач
+    // --- Habits Logic ---
+    function renderIcons() {
+        const grid = document.getElementById('iconGrid');
+        grid.innerHTML = '';
+        ICONS.forEach(icon => {
+            const el = document.createElement('div');
+            el.className = `icon-option ${icon === selectedIcon ? 'selected' : ''}`;
+            el.innerText = icon;
+            el.onclick = () => {
+                selectIconUI(icon);
+            };
+            grid.appendChild(el);
+        });
+    }
+
+    function selectIconUI(icon) {
+        selectedIcon = icon;
+        document.querySelectorAll('.icon-option').forEach(el => {
+            el.classList.toggle('selected', el.innerText === icon);
+        });
+    }
+
+    function toggleTimeInput() {
+        isTimeEnabled = !isTimeEnabled;
+        const switchEl = document.getElementById('timeSwitch');
+        const input = document.getElementById('habitTime');
+        
+        if (isTimeEnabled) {
+            switchEl.classList.add('active');
+            input.style.display = 'block';
+        } else {
+            switchEl.classList.remove('active');
+            input.style.display = 'none';
+        }
+    }
+
+    function saveHabit() {
+        const name = document.getElementById('habitName').value;
+        const timeVal = document.getElementById('habitTime').value;
+        
+        if (!name) return alert("Введите название!");
+
+        if (!habitsDB[selectedDateISO]) habitsDB[selectedDateISO] = [];
+
+        if (editingId) {
+            // Обновление
+            const task = habitsDB[selectedDateISO].find(t => t.id === editingId);
+            if (task) {
+                task.name = name;
+                task.icon = selectedIcon;
+                task.time = isTimeEnabled ? timeVal : null;
+            }
+        } else {
+            // Создание новой
+            habitsDB[selectedDateISO].push({
+                id: Date.now(),
+                name: name,
+                icon: selectedIcon,
+                time: isTimeEnabled ? timeVal : null,
+                completed: false
+            });
+        }
+
+        switchScreen('dashboard-screen');
         renderHabits();
     }
 
-    // --- Логика Привычек ---
+    function deleteCurrentHabit() {
+        if (!editingId) return;
+        if(confirm('Удалить эту задачу?')) {
+            habitsDB[selectedDateISO] = habitsDB[selectedDateISO].filter(t => t.id !== editingId);
+            switchScreen('dashboard-screen');
+            renderHabits();
+        }
+    }
 
-    // Выбор 1: Случайные
     function chooseRandom() {
         const ideas = [
-            { name: "Выпить стакан воды", icon: "💧" },
-            { name: "Медитация 10 мин", icon: "🧘" },
-            { name: "Прогулка 20 мин", icon: "🏃" },
-            { name: "Чтение книги", icon: "📖" },
-            { name: "Не есть сахар", icon: "🍎" },
-            { name: "Лечь спать до 23:00", icon: "😴" }
+            { name: "Выпить воды", icon: "💧" },
+            { name: "Медитация", icon: "🧘" },
+            { name: "Прогулка", icon: "🏃" },
+            { name: "Чтение", icon: "📖" },
+            { name: "Без сахара", icon: "🍏" }
         ];
-
-        // Берем 3 случайных
-        const shuffled = ideas.sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, 3);
-
-        if (!habitsDB[selectedDate]) habitsDB[selectedDate] = [];
         
-        selected.forEach(item => {
-            habitsDB[selectedDate].push({
+        if (!habitsDB[selectedDateISO]) habitsDB[selectedDateISO] = [];
+        
+        // Добавляем 3 случайных
+        const shuffled = ideas.sort(() => 0.5 - Math.random()).slice(0, 3);
+        shuffled.forEach(item => {
+            habitsDB[selectedDateISO].push({
                 id: Date.now() + Math.random(),
                 name: item.name,
                 icon: item.icon,
+                time: null,
                 completed: false
             });
         });
@@ -549,45 +624,19 @@
         renderHabits();
     }
 
-    // Выбор 2: Своя привычка
-    function selectIcon(el) {
-        document.querySelectorAll('.icon-option').forEach(i => i.classList.remove('selected'));
-        el.classList.add('selected');
-        selectedIcon = el.innerText;
-    }
-
-    function saveCustomHabit() {
-        const name = document.getElementById('habitName').value;
-        const time = document.getElementById('habitTime').value;
-
-        if (!name) return alert("Введите название привычки!");
-
-        if (!habitsDB[selectedDate]) habitsDB[selectedDate] = [];
-
-        habitsDB[selectedDate].push({
-            id: Date.now(),
-            name: `${name} ${time ? '('+time+')' : ''}`,
-            icon: selectedIcon,
-            completed: false
-        });
-
-        // Очистка формы
-        document.getElementById('habitName').value = '';
-        
-        switchScreen('dashboard-screen');
-        renderHabits();
-    }
-
-    // --- Рендеринг и Прогресс ---
-
+    // --- Render Dashboard ---
     function renderHabits() {
         const list = document.getElementById('habitList');
         list.innerHTML = '';
         
-        const tasks = habitsDB[selectedDate] || [];
+        const tasks = habitsDB[selectedDateISO] || [];
 
         if (tasks.length === 0) {
-            list.innerHTML = '<p style="text-align:center; color:gray; margin-top:20px;">На этот день задач нет</p>';
+            list.innerHTML = `
+                <div style="text-align:center; margin-top:50px; opacity:0.5;">
+                    <div style="font-size:40px; margin-bottom:10px;">💤</div>
+                    <p>На этот день задач нет</p>
+                </div>`;
             updateProgress(0, 0);
             return;
         }
@@ -595,48 +644,61 @@
         tasks.forEach(task => {
             const item = document.createElement('div');
             item.className = `habit-item ${task.completed ? 'completed' : ''}`;
-            item.onclick = (e) => toggleTask(task.id, e);
-
-            item.innerHTML = `
-                <div class="habit-info">
-                    <span class="habit-icon">${task.icon}</span>
-                    <span>${task.name}</span>
+            
+            // Левая часть (клик открывает редактирование)
+            const content = document.createElement('div');
+            content.className = 'habit-content-click';
+            content.onclick = () => goToCreate(task.id);
+            content.innerHTML = `
+                <span class="habit-icon">${task.icon}</span>
+                <div class="habit-details">
+                    <span class="habit-name">${task.name}</span>
+                    ${task.time ? `<span class="habit-time">⏰ ${task.time}</span>` : ''}
                 </div>
-                <div class="checkbox"></div>
             `;
+
+            // Правая часть (Чекбокс)
+            const checkboxWrapper = document.createElement('div');
+            checkboxWrapper.className = 'checkbox-wrapper';
+            checkboxWrapper.onclick = (e) => {
+                e.stopPropagation(); // чтобы не сработало редактирование
+                toggleTask(task.id);
+            };
+            checkboxWrapper.innerHTML = `<div class="checkbox"></div>`;
+            
+            // Кнопка редактирования (карандаш)
+            const editBtn = document.createElement('div');
+            editBtn.className = 'edit-btn';
+            editBtn.innerHTML = '✎';
+            editBtn.onclick = (e) => {
+                 e.stopPropagation();
+                 goToCreate(task.id);
+            };
+
+            item.appendChild(content);
+            item.appendChild(editBtn);
+            item.appendChild(checkboxWrapper);
             list.appendChild(item);
         });
 
-        // Считаем прогресс
         const completedCount = tasks.filter(t => t.completed).length;
         updateProgress(completedCount, tasks.length);
     }
 
-    function toggleTask(id, event) {
-        // Чтобы клик по самому чекбоксу не срабатывал дважды, если нужно, но здесь клик по карточке
-        const tasks = habitsDB[selectedDate];
-        const task = tasks.find(t => t.id === id);
+    function toggleTask(id) {
+        const task = habitsDB[selectedDateISO].find(t => t.id === id);
         if (task) {
             task.completed = !task.completed;
-            renderHabits(); // Перерисовать
+            renderHabits();
         }
     }
 
     function updateProgress(done, total) {
         const percent = total === 0 ? 0 : Math.round((done / total) * 100);
-        const fill = document.getElementById('progressFill');
-        const text = document.getElementById('progressPercent');
-
-        fill.style.width = percent + '%';
-        text.innerText = percent + '%';
-        
-        // Меняем цвет текста при высоком прогрессе для контраста, если нужно
-        if(percent > 50) {
-            fill.style.opacity = "0.4"; // Делаем чуть ярче
-        }
+        document.getElementById('progressFill').style.width = percent + '%';
+        document.getElementById('progressPercent').innerText = percent + '%';
     }
 
-//проверка
 </script>
 
 </body>
